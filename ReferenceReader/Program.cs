@@ -11,13 +11,22 @@ namespace ReferenceReader
 {
     public class Program
     {
+        static Dictionary<string, DllReference> dllReferences = new Dictionary<string, DllReference>();
+        static Dictionary<string, ProjectReference> projectReferences = new Dictionary<string, ProjectReference>();
+        static Dictionary<string, PackageReference> packageReferences = new Dictionary<string, PackageReference>();
+
         public static void Main()
         {
             string projectFilePath = GetProjectFilePath();
+            
+            if (!File.Exists(projectFilePath))
+            {
+                Console.WriteLine("Project file not found at the specified location.");
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
+                return; // Exit the program
+            }
 
-            Dictionary<string, DllReference> dllReferences = new Dictionary<string, DllReference>();
-            Dictionary<string, ProjectReference> projectReferences = new Dictionary<string, ProjectReference>();
-            Dictionary<string, PackageReference> packageReferences = new Dictionary<string, PackageReference>();
 
             ProjectRootElement projectRootElement = ProjectRootElement.Open(projectFilePath);
             var itemGroups = projectRootElement.ItemGroups;
