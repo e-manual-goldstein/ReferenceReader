@@ -13,8 +13,8 @@ namespace ReferenceReader
 
         protected override void SetProperties(ProjectItemElement item)
         {
-            Project = item.Metadata.FirstOrDefault(m => m.Name == "Project")?.Value;
-            PrivateAssets = item.Metadata.FirstOrDefault(m => m.Name == "PrivateAssets")?.Value;
+            Project = item.GetMetadataValue("Project");
+            PrivateAssets = item.GetMetadataValue("PrivateAssets");
             // Set specific properties for ProjectReference
         }
     }

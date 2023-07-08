@@ -20,10 +20,10 @@ namespace ReferenceReader
         {
             Include = item.Include;
             Condition = item.Condition;
-            Alias = item.Metadata.FirstOrDefault(m => m.Name == "Alias")?.Value;
-            Update = item.Metadata.FirstOrDefault(m => m.Name == "Update")?.Value;
+            Alias = item.GetMetadataValue("Alias");
+            Update = item.GetMetadataValue("Update");
             // Assign other common properties
-            Name = item.Metadata.FirstOrDefault(m => m.Name == "Name")?.Value;
+            Name = item.GetMetadataValue("Name");
 
             SetProperties(item);
         }
