@@ -17,9 +17,9 @@ namespace ReferenceReader
             // Additional constructor logic specific to ProjectReference
             Project = item.GetMetadataValue("Project");
             PrivateAssets = item.GetMetadataValue("PrivateAssets");
-
             RelativePath = item.GetMetadataValue("Include");
             ActualPath = ResolveActualPath(RelativePath);
+            Name = Path.GetFileNameWithoutExtension(RelativePath);
         }
 
         private string ResolveActualPath(string relativePath)
@@ -27,7 +27,8 @@ namespace ReferenceReader
             if (!string.IsNullOrEmpty(ContainedProjectPath))
             {
                 string directory = Path.GetDirectoryName(ContainedProjectPath);
-                return Path.Combine(directory, relativePath);
+                string fullPath = Path.GetFullPath(Path.Combine(directory, relativePath));
+                return fullPath;
             }
             return null;
         }
