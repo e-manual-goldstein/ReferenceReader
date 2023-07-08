@@ -1,14 +1,21 @@
 ﻿using Microsoft.Build.Construction;
+using System.Linq;
 
 namespace ReferenceReader
 {
     public class ProjectReference : AbstractReference
     {
-        // Add specific properties for project references
-
-        public ProjectReference(ProjectItemElement item) : base(item)
+        public ProjectReference(ProjectItemElement item)
+            : base(item)
         {
-            // Assign additional properties for project references
+            // Additional constructor logic specific to ProjectReference
+        }
+
+        protected override void SetProperties(ProjectItemElement item)
+        {
+            Project = item.Metadata.FirstOrDefault(m => m.Name == "Project")?.Value;
+            PrivateAssets = item.Metadata.FirstOrDefault(m => m.Name == "PrivateAssets")?.Value;
+            // Set specific properties for ProjectReference
         }
     }
 }

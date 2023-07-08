@@ -1,19 +1,21 @@
 ﻿using Microsoft.Build.Construction;
-using System;
+using Microsoft.Build.Evaluation;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReferenceReader
 {
     public class PackageReference : AbstractReference
     {
-        // Add specific properties for package references
-
-        public PackageReference(ProjectItemElement item) : base(item)
+        public PackageReference(ProjectItemElement item)
+            : base(item)
         {
-            // Assign additional properties for package references
+            // Additional constructor logic specific to PackageReference
+        }
+
+        protected override void SetProperties(ProjectItemElement item)
+        {
+            // Set specific properties for PackageReference
         }
     }
 }

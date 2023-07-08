@@ -1,14 +1,21 @@
 ﻿using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ReferenceReader
 {
     public class DllReference : AbstractReference
     {
-        // Add specific properties for DLL references
-
-        public DllReference(ProjectItemElement item) : base(item)
+        public DllReference(ProjectItemElement item)
+            : base(item)
         {
-            // Assign additional properties for DLL references
+            // Additional constructor logic specific to DllReference
+        }
+
+        protected override void SetProperties(ProjectItemElement item)
+        {
+            // Set specific properties for DllReference
         }
     }
 }

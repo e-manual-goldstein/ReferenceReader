@@ -1,5 +1,7 @@
-﻿using System.Linq;
-using Microsoft.Build.Construction;
+﻿using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ReferenceReader
 {
@@ -9,37 +11,23 @@ namespace ReferenceReader
         public string Condition { get; set; }
         public string Alias { get; set; }
         public string Update { get; set; }
-        public string Name { get; set; }
-        public string Project { get; set; }
-        public string Package { get; set; }
-        public string PrivateAssets { get; set; }
-        // Add more properties as needed
+        public string Name { get; protected set; }
+        public string Project { get; protected set; }
+        public string Package { get; protected set; }
+        public string PrivateAssets { get; protected set; }
 
-        protected AbstractReference(ProjectItemElement item)
+        public AbstractReference(ProjectItemElement item)
         {
             Include = item.Include;
             Condition = item.Condition;
             Alias = item.Metadata.FirstOrDefault(m => m.Name == "Alias")?.Value;
             Update = item.Metadata.FirstOrDefault(m => m.Name == "Update")?.Value;
             // Assign other common properties
+            Name = item.Metadata.FirstOrDefault(m => m.Name == "Name")?.Value;
 
-            // Specific properties for different reference types
-            if (item.ItemType == "Reference")
-            {
-                Name = item.Metadata.FirstOrDefault(m => m.Name == "Name")?.Value;
-            }
-            else if (item.ItemType == "ProjectReference")
-            {
-                Name = item.Metadata.FirstOrDefault(m => m.Name == "Name")?.Value;
-                Project = item.Metadata.FirstOrDefault(m => m.Name == "Project")?.Value;
-                PrivateAssets = item.Metadata.FirstOrDefault(m => m.Name == "PrivateAssets")?.Value;
-            }
-            else if (item.ItemType == "PackageReference")
-            {
-                Name = item.Metadata.FirstOrDefault(m => m.Name == "Name")?.Value;
-                Package = item.Metadata.FirstOrDefault(m => m.Name == "Package")?.Value;
-            }
-            // Add more properties for other reference types
+            SetProperties(item);
         }
+
+        protected abstract void SetProperties(ProjectItemElement item);
     }
 }
