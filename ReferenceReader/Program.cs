@@ -26,6 +26,7 @@ namespace ReferenceReader
 
             if (projectFilePath == null)
             {
+                Console.WriteLine($"Project file not found at the specified location. {projectFilePath}");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey();
                 return; // Exit the program
