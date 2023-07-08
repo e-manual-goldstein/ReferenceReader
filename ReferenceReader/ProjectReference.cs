@@ -20,6 +20,7 @@ namespace ReferenceReader
 
             RelativePath = item.Include;
             ActualPath = ResolveActualPath(RelativePath);
+            Name = Path.GetFileNameWithoutExtension(RelativePath);
         }
 
         private string ResolveActualPath(string relativePath)
