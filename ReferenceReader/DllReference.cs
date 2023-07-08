@@ -13,9 +13,5 @@ namespace ReferenceReader
             // Additional constructor logic specific to DllReference
         }
 
-        protected override void SetProperties(ProjectItemElement item)
-        {
-            // Set specific properties for DllReference
-        }
     }
 }

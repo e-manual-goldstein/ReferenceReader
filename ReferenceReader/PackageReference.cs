@@ -13,11 +13,8 @@ namespace ReferenceReader
         public PackageReference(ProjectItemElement item)
             : base(item)
         {
-        }
-
-        protected override void SetProperties(ProjectItemElement item)
-        {
             Version = item.GetMetadataValue("Version");
         }
+
     }
 }
