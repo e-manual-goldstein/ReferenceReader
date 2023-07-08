@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
 using System.IO;
 using System.Text.Json;
 using System.Xml.Linq;
@@ -71,10 +73,24 @@ namespace ReferenceReader
         private static string GetProjectFilePath()
         {
             var configPath = "config.json";
-            var configContent = File.ReadAllText(configPath);
+            string configContent;
+
+            if (!File.Exists(configPath))
+            {
+                var defaultConfig = new { ProjectFilePath = "Path/To/YourProject.csproj" };
+                configContent = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(configPath, configContent);
+                Console.WriteLine($"A new config.json file has been created at: {Path.GetFullPath(configPath)}");
+            }
+            else
+            {
+                configContent = File.ReadAllText(configPath);
+            }
+
             var jsonConfig = JsonDocument.Parse(configContent);
             var projectFilePath = jsonConfig.RootElement.GetProperty("ProjectFilePath").GetString();
             return projectFilePath;
         }
+
     }
 }
