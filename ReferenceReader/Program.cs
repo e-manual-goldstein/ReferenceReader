@@ -48,7 +48,7 @@ namespace ReferenceReader
                     else if (item.ItemType == "ProjectReference")
                     {
                         ProjectReference projectReference = new ProjectReference(item);
-                        projectReferences[projectReference.Include] = projectReference;
+                        projectReferences[projectReference.Name] = projectReference;
                     }
                     else if (item.ItemType == "PackageReference")
                     {

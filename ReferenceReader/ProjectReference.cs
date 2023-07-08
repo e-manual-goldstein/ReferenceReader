@@ -18,16 +18,16 @@ namespace ReferenceReader
             Project = item.GetMetadataValue("Project");
             PrivateAssets = item.GetMetadataValue("PrivateAssets");
 
-            RelativePath = item.GetMetadataValue("Include");
+            RelativePath = item.Include;
             ActualPath = ResolveActualPath(RelativePath);
         }
 
         private string ResolveActualPath(string relativePath)
         {
-            if (!string.IsNullOrEmpty(ContainedProjectPath))
+            if (!string.IsNullOrEmpty(ContainingProjectPath))
             {
-                string directory = Path.GetDirectoryName(ContainedProjectPath);
-                return Path.Combine(directory, relativePath);
+                string directory = Path.GetDirectoryName(ContainingProjectPath);
+                return Path.GetFullPath( Path.Combine(directory, relativePath));
             }
             return null;
         }

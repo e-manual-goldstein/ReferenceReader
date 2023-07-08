@@ -15,7 +15,7 @@ namespace ReferenceReader
         public string Project { get; protected set; }
         public string Package { get; protected set; }
         public string PrivateAssets { get; protected set; }
-        public string ContainedProjectPath { get; protected set; }
+        public string ContainingProjectPath { get; protected set; }
 
         public AbstractReference(ProjectItemElement item)
         {
@@ -24,8 +24,8 @@ namespace ReferenceReader
             Alias = item.GetMetadataValue("Alias");
             Update = item.GetMetadataValue("Update");
             // Assign other common properties
-            Name = item.GetMetadataValue("Name");
-            ContainedProjectPath = item.GetMetadataValue("ContainedProject");
+            Name = item.GetMetadataValue("Name") ?? item.Include;            
+            ContainingProjectPath = item.ContainingProject.FullPath;
 
         }
 
