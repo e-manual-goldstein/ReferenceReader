@@ -15,13 +15,17 @@ namespace ReferenceReader
         static Dictionary<string, ProjectReference> projectReferences = new Dictionary<string, ProjectReference>();
         static Dictionary<string, PackageReference> packageReferences = new Dictionary<string, PackageReference>();
 
+        private static ConfigManager configManager;
+
         public static void Main()
         {
-            string projectFilePath = GetProjectFilePath();
-            
-            if (!File.Exists(projectFilePath))
+            configManager = new ConfigManager();
+            configManager.SettingNotFound += HandleSettingNotFound;
+
+            string projectFilePath = configManager.GetProjectFilePath();
+
+            if (projectFilePath == null)
             {
-                Console.WriteLine("Project file not found at the specified location.");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey();
                 return; // Exit the program
@@ -79,27 +83,32 @@ namespace ReferenceReader
             }
         }
 
-        private static string GetProjectFilePath()
+        //private static string GetProjectFilePath()
+        //{
+        //    var configPath = "config.json";
+        //    string configContent;
+
+        //    if (!File.Exists(configPath))
+        //    {
+        //        var defaultConfig = new { ProjectFilePath = "Path/To/YourProject.csproj" };
+        //        configContent = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
+        //        File.WriteAllText(configPath, configContent);
+        //        Console.WriteLine($"A new config.json file has been created at: {Path.GetFullPath(configPath)}");
+        //    }
+        //    else
+        //    {
+        //        configContent = File.ReadAllText(configPath);
+        //    }
+
+        //    var jsonConfig = JsonDocument.Parse(configContent);
+        //    var projectFilePath = jsonConfig.RootElement.GetProperty("ProjectFilePath").GetString();
+        //    return projectFilePath;
+        //}
+
+        private static string HandleSettingNotFound()
         {
-            var configPath = "config.json";
-            string configContent;
-
-            if (!File.Exists(configPath))
-            {
-                var defaultConfig = new { ProjectFilePath = "Path/To/YourProject.csproj" };
-                configContent = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(configPath, configContent);
-                Console.WriteLine($"A new config.json file has been created at: {Path.GetFullPath(configPath)}");
-            }
-            else
-            {
-                configContent = File.ReadAllText(configPath);
-            }
-
-            var jsonConfig = JsonDocument.Parse(configContent);
-            var projectFilePath = jsonConfig.RootElement.GetProperty("ProjectFilePath").GetString();
-            return projectFilePath;
+            Console.WriteLine("Please input a value for the following config setting: ProjectFilePath");
+            return Console.ReadLine();
         }
-
     }
 }
