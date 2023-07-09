@@ -1,5 +1,6 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,20 @@ namespace ReferenceReader
 
             RelativePath = item.Include;
             Name = Path.GetFileNameWithoutExtension(RelativePath);
-            ActualPath = ResolveActualPath();
+            ActualPath = ResolveActualPath();            
+        }
+
+
+        ProjectFile _projectFile;
+        public ProjectFile ProjectFile => _projectFile ?? LoadProjectFileFromPath();
+
+        private ProjectFile LoadProjectFileFromPath()
+        {
+            if (!string.IsNullOrEmpty(ActualPath) && File.Exists(ActualPath))
+            {
+                return new ProjectFile(ActualPath);
+            }
+            return null;
         }
 
         protected override string ResolveActualPath()
@@ -30,6 +44,14 @@ namespace ReferenceReader
                 return Path.GetFullPath( Path.Combine(directory, Include));
             }
             return null;
+        }
+
+        public override IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile projectFile)
+        {
+            foreach (var reference in ProjectFile.AllReferences())
+            {
+                yield return null;
+            }
         }
     }
 }

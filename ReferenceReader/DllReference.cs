@@ -28,5 +28,12 @@ namespace ReferenceReader
             }
             return null;
         }
+
+        public override IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile rootProject)
+        {
+            // Logic to determine transitive dependencies specific to PackageReference
+            // Return the transitive dependencies as IEnumerable<ITransitiveDependency>
+            yield break;
+        }
     }
 }

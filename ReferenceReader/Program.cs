@@ -27,7 +27,7 @@ namespace ReferenceReader
                 return; // Exit the program
             }
 
-            RootProject rootProject = new RootProject(projectFilePath);
+            ProjectFile rootProject = new ProjectFile(projectFilePath);
             rootProject.GetReferences();
 
             foreach (var @ref in rootProject.AllReferences())

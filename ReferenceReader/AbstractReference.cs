@@ -34,11 +34,7 @@ namespace ReferenceReader
 
         protected abstract string ResolveActualPath();
 
-        public virtual IEnumerable<ITransitiveDependency> GetTransitiveDependencies(RootProject rootProject)
-        {
-            // Logic to determine transitive dependencies specific to PackageReference
-            // Return the transitive dependencies as IEnumerable<ITransitiveDependency>
-            yield break;
-        }
+        public abstract IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile rootProject);
+        
     }
 }

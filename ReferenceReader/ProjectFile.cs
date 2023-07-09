@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace ReferenceReader
 {
-    public class RootProject
+    public class ProjectFile
     {
         private string _projectFilePath;
 
-        public RootProject(string projectFilePath)
+        public ProjectFile(string projectFilePath)
         {
             _projectFilePath = projectFilePath;
         }
