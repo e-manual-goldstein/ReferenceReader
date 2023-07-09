@@ -23,7 +23,7 @@ namespace ReferenceReader
             configManager.SettingNotFound += HandleSettingNotFound;
 
             string projectFilePath = configManager.GetProjectFilePath();
-
+            
             if (projectFilePath == null)
             {
                 Console.WriteLine($"Project file not found at the specified location. {projectFilePath}");
@@ -43,7 +43,7 @@ namespace ReferenceReader
                     if (item.ItemType == "Reference")
                     {
                         DllReference dllReference = new DllReference(item);
-                        dllReferences[dllReference.Include] = dllReference;
+                        dllReferences[dllReference.Name] = dllReference;
                     }
                     else if (item.ItemType == "ProjectReference")
                     {
@@ -53,7 +53,7 @@ namespace ReferenceReader
                     else if (item.ItemType == "PackageReference")
                     {
                         PackageReference packageReference = new PackageReference(item);
-                        packageReferences[packageReference.Include] = packageReference;
+                        packageReferences[packageReference.Name] = packageReference;
                     }
                 }
             }
@@ -62,24 +62,21 @@ namespace ReferenceReader
             Console.WriteLine("DLL References:");
             foreach (var dllReference in dllReferences.Values)
             {
-                Console.WriteLine($"{dllReference.Include} - {dllReference.Condition} - {dllReference.Name}");
+                Console.WriteLine($"{dllReference.Name} - {dllReference.ActualPath}");
                 // Print other properties specific to DLL references
             }
 
             Console.WriteLine("\nProject References:");
             foreach (var projectReference in projectReferences.Values)
             {
-                Console.WriteLine($"{projectReference.Include} - {projectReference.Condition} - {projectReference.Name}");
-                Console.WriteLine($"  Project: {projectReference.Project}");
-                Console.WriteLine($"  PrivateAssets: {projectReference.PrivateAssets}");
+                Console.WriteLine($"{projectReference.Name} - {projectReference.ActualPath}");
                 // Print other properties specific to project references
             }
 
             Console.WriteLine("\nPackage References:");
             foreach (var packageReference in packageReferences.Values)
             {
-                Console.WriteLine($"{packageReference.Include} - {packageReference.Condition} - {packageReference.Name}");
-                Console.WriteLine($"  Package: {packageReference.Package}");
+                Console.WriteLine($"{packageReference.Name}  -  {packageReference.ActualPath}");               
                 // Print other properties specific to package references
             }
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ReferenceReader
@@ -16,6 +17,7 @@ namespace ReferenceReader
         public string Package { get; protected set; }
         public string PrivateAssets { get; protected set; }
         public string ContainingProjectPath { get; protected set; }
+        public string ActualPath { get; protected set; }
 
         public AbstractReference(ProjectItemElement item)
         {
@@ -29,5 +31,6 @@ namespace ReferenceReader
 
         }
 
+        protected abstract string ResolveActualPath();
     }
 }

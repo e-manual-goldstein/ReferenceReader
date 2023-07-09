@@ -14,7 +14,12 @@ namespace ReferenceReader
             : base(item)
         {
             Version = item.GetMetadataValue("Version");
+            ActualPath = ResolveActualPath();
         }
 
+        protected override string ResolveActualPath()
+        {
+            return "";
+        }
     }
 }

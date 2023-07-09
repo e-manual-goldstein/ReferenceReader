@@ -9,7 +9,6 @@ namespace ReferenceReader
     public class ProjectReference : AbstractReference
     {
         public string RelativePath { get; protected set; }
-        public string ActualPath { get; protected set; }
 
         public ProjectReference(ProjectItemElement item)
             : base(item)
@@ -19,16 +18,16 @@ namespace ReferenceReader
             PrivateAssets = item.GetMetadataValue("PrivateAssets");
 
             RelativePath = item.Include;
-            ActualPath = ResolveActualPath(RelativePath);
             Name = Path.GetFileNameWithoutExtension(RelativePath);
+            ActualPath = ResolveActualPath();
         }
 
-        private string ResolveActualPath(string relativePath)
+        protected override string ResolveActualPath()
         {
             if (!string.IsNullOrEmpty(ContainingProjectPath))
             {
                 string directory = Path.GetDirectoryName(ContainingProjectPath);
-                return Path.GetFullPath( Path.Combine(directory, relativePath));
+                return Path.GetFullPath( Path.Combine(directory, Include));
             }
             return null;
         }
