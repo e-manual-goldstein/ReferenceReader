@@ -1,5 +1,6 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using ReferenceReader.Dependencies;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +33,12 @@ namespace ReferenceReader
 
             foreach (var @ref in rootProject.AllReferences())
             {
-                IEnumerable<ITransitiveDependency> transitiveDependencies = @ref.GetTransitiveDependencies(rootProject).ToList();
+                Console.WriteLine(@ref.Name);
+                foreach (var dependency in @ref.GetTransitiveDependencies(rootProject))
+                {
+                    Console.WriteLine($"\t{dependency.Name}");
+                }
+                
                 // Process the transitive dependencies as needed
             }
 

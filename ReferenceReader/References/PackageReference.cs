@@ -1,11 +1,12 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using ReferenceReader.Dependencies;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace ReferenceReader
+namespace ReferenceReader.References
 {
     public class PackageReference : AbstractReference
     {

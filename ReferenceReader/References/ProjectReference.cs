@@ -1,11 +1,12 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using ReferenceReader.Dependencies;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace ReferenceReader
+namespace ReferenceReader.References
 {
     public class ProjectReference : AbstractReference
     {
@@ -20,7 +21,7 @@ namespace ReferenceReader
 
             RelativePath = item.Include;
             Name = Path.GetFileNameWithoutExtension(RelativePath);
-            ActualPath = ResolveActualPath();            
+            ActualPath = ResolveActualPath();
         }
 
 
@@ -41,7 +42,7 @@ namespace ReferenceReader
             if (!string.IsNullOrEmpty(ContainingProjectPath))
             {
                 string directory = Path.GetDirectoryName(ContainingProjectPath);
-                return Path.GetFullPath( Path.Combine(directory, Include));
+                return Path.GetFullPath(Path.Combine(directory, Include));
             }
             return null;
         }

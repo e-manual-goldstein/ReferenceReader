@@ -1,16 +1,16 @@
 ﻿using Microsoft.Build.Construction;
-using Microsoft.Build.Evaluation;
+using Mono.Cecil;
+using ReferenceReader.Dependencies;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReferenceReader
+namespace ReferenceReader.References
 {
     public class DllReference : AbstractReference
     {
         public string HintPath { get; }
-        
+
         public DllReference(ProjectItemElement item)
             : base(item)
         {
@@ -29,11 +29,20 @@ namespace ReferenceReader
             return null;
         }
 
-        public override IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile rootProject)
+        public override IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile projectFile)
         {
-            // Logic to determine transitive dependencies specific to PackageReference
-            // Return the transitive dependencies as IEnumerable<ITransitiveDependency>
-            yield break;
+            // Load the DLL using Cecil
+            AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(ActualPath);
+
+            // Iterate through each referenced assembly
+            foreach (AssemblyNameReference reference in assembly.MainModule.AssemblyReferences)
+            {
+                // Create a TransitiveDependency instance with the assembly name as the name
+                TransitiveDependency dependency = new DllDependency(reference.Name);
+
+                // Yield the dependency
+                yield return dependency;
+            }
         }
     }
 }

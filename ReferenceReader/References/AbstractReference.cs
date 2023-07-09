@@ -1,11 +1,12 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using ReferenceReader.Dependencies;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace ReferenceReader
+namespace ReferenceReader.References
 {
     public abstract class AbstractReference
     {
@@ -27,7 +28,7 @@ namespace ReferenceReader
             Alias = item.GetMetadataValue("Alias");
             Update = item.GetMetadataValue("Update");
             // Assign other common properties
-            Name = item.GetMetadataValue("Name") ?? item.Include;            
+            Name = item.GetMetadataValue("Name") ?? item.Include;
             ContainingProjectPath = item.ContainingProject.FullPath;
 
         }
@@ -35,6 +36,6 @@ namespace ReferenceReader
         protected abstract string ResolveActualPath();
 
         public abstract IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile rootProject);
-        
+
     }
 }
