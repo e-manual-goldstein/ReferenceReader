@@ -9,9 +9,6 @@ namespace ReferenceReader
 {
     public class Program
     {
-        static Dictionary<string, DllReference> _dllReferences = new Dictionary<string, DllReference>();
-        static Dictionary<string, ProjectReference> _projectReferences = new Dictionary<string, ProjectReference>();
-        static Dictionary<string, PackageReference> _packageReferences = new Dictionary<string, PackageReference>();
 
         private static ConfigManager configManager;
 
@@ -31,9 +28,9 @@ namespace ReferenceReader
             }
 
             RootProject rootProject = new RootProject(projectFilePath);
-            GetReferences(projectFilePath);
+            rootProject.GetReferences();
 
-            foreach (var (key, @ref) in _dllReferences)
+            foreach (var @ref in rootProject.AllReferences())
             {
                 IEnumerable<ITransitiveDependency> transitiveDependencies = @ref.GetTransitiveDependencies(rootProject).ToList();
                 // Process the transitive dependencies as needed
@@ -44,51 +41,7 @@ namespace ReferenceReader
         }
 
 
-        static void GetReferences(string projectFilePath)
-        {
-            ProjectRootElement root = ProjectRootElement.Open(projectFilePath);
-            
-            foreach (var itemGroup in root.ItemGroups)
-            {
-                foreach (var item in itemGroup.Items)
-                {
-                    switch (item.ItemType)
-                    {
-                        case "Reference":
-                            var dllReference = new DllReference(item);
-                            _dllReferences[dllReference.Name] = dllReference;
-                            break;
-                        case "PackageReference":
-                            var packageReference = new PackageReference(item);
-                            _packageReferences[packageReference.Name] = packageReference;
-                            break;
-                        case "ProjectReference":
-                            var projectReference = new ProjectReference(item);
-                            _projectReferences[projectReference.Name] = projectReference;
-                            break;
-                        default:
-                            continue;
-                    }
-                }
-            }
-        }
-
-        static AbstractReference CreateReference(ProjectItemElement item)
-        {
-            switch (item.ItemType)
-            {
-                case "Reference":
-                    return new DllReference(item);
-                case "PackageReference":
-                    return new PackageReference(item);
-                case "ProjectReference":
-                    return new ProjectReference(item);
-                default:
-                    return null;
-            }
-
-
-        }
+       
         private static string HandleSettingNotFound()
         {
             Console.WriteLine("Please input a value for the following config setting: ProjectFilePath");
