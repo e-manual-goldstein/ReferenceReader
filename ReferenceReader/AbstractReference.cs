@@ -1,5 +1,6 @@
 ﻿using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,5 +30,11 @@ namespace ReferenceReader
 
         }
 
+        public virtual IEnumerable<ITransitiveDependency> GetTransitiveDependencies(RootProject rootProject)
+        {
+            // Logic to determine transitive dependencies specific to PackageReference
+            // Return the transitive dependencies as IEnumerable<ITransitiveDependency>
+            yield break;
+        }
     }
 }
