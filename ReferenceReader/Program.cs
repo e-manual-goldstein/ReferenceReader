@@ -9,9 +9,9 @@ namespace ReferenceReader
 {
     public class Program
     {
-        static Dictionary<string, DllReference> dllReferences = new Dictionary<string, DllReference>();
-        static Dictionary<string, ProjectReference> projectReferences = new Dictionary<string, ProjectReference>();
-        static Dictionary<string, PackageReference> packageReferences = new Dictionary<string, PackageReference>();
+        static Dictionary<string, DllReference> _dllReferences = new Dictionary<string, DllReference>();
+        static Dictionary<string, ProjectReference> _projectReferences = new Dictionary<string, ProjectReference>();
+        static Dictionary<string, PackageReference> _packageReferences = new Dictionary<string, PackageReference>();
 
         private static ConfigManager configManager;
 
@@ -31,11 +31,11 @@ namespace ReferenceReader
             }
 
             RootProject rootProject = new RootProject(projectFilePath);
-            var references = GetReferences(projectFilePath);
+            GetReferences(projectFilePath);
 
-            foreach (var reference in references)
+            foreach (var (key, @ref) in _dllReferences)
             {
-                IEnumerable<ITransitiveDependency> transitiveDependencies = reference.GetTransitiveDependencies(rootProject);
+                IEnumerable<ITransitiveDependency> transitiveDependencies = @ref.GetTransitiveDependencies(rootProject).ToList();
                 // Process the transitive dependencies as needed
             }
 
@@ -44,7 +44,7 @@ namespace ReferenceReader
         }
 
 
-        static IEnumerable<AbstractReference> GetReferences(string projectFilePath)
+        static void GetReferences(string projectFilePath)
         {
             ProjectRootElement root = ProjectRootElement.Open(projectFilePath);
             
@@ -52,8 +52,23 @@ namespace ReferenceReader
             {
                 foreach (var item in itemGroup.Items)
                 {
-                    yield return CreateReference(item);
-                    
+                    switch (item.ItemType)
+                    {
+                        case "Reference":
+                            var dllReference = new DllReference(item);
+                            _dllReferences[dllReference.Name] = dllReference;
+                            break;
+                        case "PackageReference":
+                            var packageReference = new PackageReference(item);
+                            _packageReferences[packageReference.Name] = packageReference;
+                            break;
+                        case "ProjectReference":
+                            var projectReference = new ProjectReference(item);
+                            _projectReferences[projectReference.Name] = projectReference;
+                            break;
+                        default:
+                            continue;
+                    }
                 }
             }
         }
