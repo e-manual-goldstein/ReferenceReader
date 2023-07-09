@@ -22,7 +22,7 @@ namespace ReferenceReader
             configManager = new ConfigManager();
             configManager.SettingNotFound += HandleSettingNotFound;
 
-            string projectFilePath = configManager.GetProjectFilePath();
+            string projectFilePath = configManager.GetConfigSetting("ProjectFilePath");
 
             if (projectFilePath == null)
             {
