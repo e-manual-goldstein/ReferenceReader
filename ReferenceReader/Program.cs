@@ -35,7 +35,7 @@ namespace ReferenceReader
 
             ProjectRootElement projectRootElement = ProjectRootElement.Open(projectFilePath);
             var itemGroups = projectRootElement.ItemGroups;
-
+            string packageDirectoryRelativePath = configManager.GetConfigSetting("PackageDirectory");
             foreach (var itemGroup in itemGroups)
             {
                 foreach (var item in itemGroup.Items)
@@ -52,7 +52,7 @@ namespace ReferenceReader
                     }
                     else if (item.ItemType == "PackageReference")
                     {
-                        PackageReference packageReference = new PackageReference(item);
+                        PackageReference packageReference = new PackageReference(item, packageDirectoryRelativePath);
                         packageReferences[packageReference.Name] = packageReference;
                     }
                 }
