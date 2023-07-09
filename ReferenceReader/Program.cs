@@ -22,8 +22,8 @@ namespace ReferenceReader
             configManager = new ConfigManager();
             configManager.SettingNotFound += HandleSettingNotFound;
 
-            string projectFilePath = configManager.GetProjectFilePath();
-            
+            string projectFilePath = configManager.GetConfigSetting("ProjectFilePath");
+
             if (projectFilePath == null)
             {
                 Console.WriteLine($"Project file not found at the specified location. {projectFilePath}");

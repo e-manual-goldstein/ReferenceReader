@@ -13,7 +13,7 @@ namespace ReferenceReader
 
         public event Func<string> SettingNotFound;
 
-        public string GetProjectFilePath()
+        public string GetConfigSetting(string key)
         {
             if (!File.Exists(ConfigFilePath))
             {
@@ -24,22 +24,22 @@ namespace ReferenceReader
             var configContent = File.ReadAllText(ConfigFilePath);
             var configDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(configContent, jsonOptions);
 
-            if (configDictionary.TryGetValue("ProjectFilePath", out var projectFilePath) && File.Exists(projectFilePath))
+            if (configDictionary.TryGetValue(key, out var value))
             {
-                Console.WriteLine("Using project file path from the config.");
-                return projectFilePath;
+                Console.WriteLine($"Using existing config value: {key}|{value}");
+                return value;
             }
 
-            return OnSettingNotFound();
+            return OnSettingNotFound(key);
         }
 
-        private string OnSettingNotFound()
+        private string OnSettingNotFound(string key)
         {
             if (SettingNotFound != null)
             {
                 Console.WriteLine("Setting not found in the config file. Invoking event handler to get the value.");
                 var settingValue = SettingNotFound.Invoke();
-                UpdateConfigFile("ProjectFilePath", settingValue);
+                UpdateConfigFile(key, settingValue);
                 Console.WriteLine("Updated config file with the provided value.");
                 return settingValue;
             }
