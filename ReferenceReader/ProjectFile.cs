@@ -69,16 +69,34 @@ namespace ReferenceReader
             }
         }
 
-        public void ParseWebTests()
+        public void ParseWebTestFiles()
         {
-            // Get all web test files in the project directory
-            string projectDirectory = System.IO.Path.GetDirectoryName(_projectFilePath);
-            string[] webTestFiles = System.IO.Directory.GetFiles(projectDirectory, "*.webtest", System.IO.SearchOption.AllDirectories);
-
-            foreach (string webTestFile in webTestFiles)
+            if (_isSDK)
             {
-                WebTestFile webTest = ParseWebTestFile(webTestFile);
-                _webTests[webTest.Name] = webTest;
+                // Get all web test files in the project directory
+                string projectDirectory = System.IO.Path.GetDirectoryName(_projectFilePath);
+                string[] webTestFiles = System.IO.Directory.GetFiles(projectDirectory, "*.webtest", System.IO.SearchOption.AllDirectories);
+
+                foreach (string webTestFile in webTestFiles)
+                {
+                    WebTestFile webTest = ParseWebTestFile(webTestFile);
+                    _webTests.Add(webTest.Name, webTest);
+                }
+            }
+            else
+            {
+                ProjectRootElement root = ProjectRootElement.Open(_projectFilePath);
+
+                // Find all web test files referenced in the project file
+                IEnumerable<ProjectItemElement> webTestItemElements = root.Items
+                    .Where(item => item.ItemType == "WebTest" && item.Include.EndsWith(".webtest"));
+
+                foreach (ProjectItemElement webTestItemElement in webTestItemElements)
+                {
+                    string webTestFilePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_projectFilePath), webTestItemElement.Include);
+                    WebTestFile webTest = ParseWebTestFile(webTestFilePath);
+                    _webTests.Add(webTest.Name, webTest);
+                }
             }
         }
 
