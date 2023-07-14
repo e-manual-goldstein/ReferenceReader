@@ -7,11 +7,13 @@ namespace ReferenceReader
 {
     public class ProjectFile
     {
-        private string _projectFilePath;
+        string _projectFilePath;
+        string _packagePath;
 
-        public ProjectFile(string projectFilePath)
+        public ProjectFile(string projectFilePath, string packagePath = default)
         {
             _projectFilePath = projectFilePath;
+            _packagePath = packagePath;
         }
 
         Dictionary<string, DllReference> _dllReferences = new Dictionary<string, DllReference>();
@@ -33,7 +35,7 @@ namespace ReferenceReader
                             _dllReferences[dllReference.Name] = dllReference;
                             break;
                         case "PackageReference":
-                            var packageReference = new PackageReference(item);
+                            var packageReference = new PackageReference(item, _packagePath);
                             _packageReferences[packageReference.Name] = packageReference;
                             break;
                         case "ProjectReference":

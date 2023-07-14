@@ -27,8 +27,8 @@ namespace ReferenceReader
                 Console.ReadKey();
                 return; // Exit the program
             }
-
-            ProjectFile rootProject = new ProjectFile(projectFilePath);
+            string packagePath = configManager.GetConfigSetting("PackageDirectory");
+            ProjectFile rootProject = new ProjectFile(projectFilePath, packagePath);
             rootProject.GetReferences();
 
             foreach (var @ref in rootProject.AllReferences())
