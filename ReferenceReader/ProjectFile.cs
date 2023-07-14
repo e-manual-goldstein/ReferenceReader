@@ -2,6 +2,7 @@
 using ReferenceReader.Files;
 using ReferenceReader.References;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 
@@ -26,12 +27,7 @@ namespace ReferenceReader
             xmlDoc.Load(_projectFilePath);
 
             XmlElement rootElement = xmlDoc.DocumentElement;
-            if (rootElement != null && rootElement.HasAttribute("Sdk"))
-            {
-                return true; // Project file is in SDK format
-            }
-
-            return false; // Project file is not in SDK format
+            return rootElement != null && rootElement.HasAttribute("Sdk");
         }
 
         Dictionary<string, DllReference> _dllReferences = new Dictionary<string, DllReference>();
@@ -73,33 +69,30 @@ namespace ReferenceReader
 
         public void ParseWebTestFiles()
         {
-            if (_isSDK)
+            foreach (string webTestFile in GetWebTestPaths())
             {
-                // Get all web test files in the project directory
-                string projectDirectory = System.IO.Path.GetDirectoryName(_projectFilePath);
-                string[] webTestFiles = System.IO.Directory.GetFiles(projectDirectory, "*.webtest", System.IO.SearchOption.AllDirectories);
-
-                foreach (string webTestFile in webTestFiles)
+                if (File.Exists(webTestFile) && !_webTests.ContainsKey(webTestFile))
                 {
                     WebTestFile webTest = ParseWebTestFile(webTestFile);
-                    _webTests.Add(webTest.Name, webTest);
+                    _webTests.Add(webTest.FilePath, webTest);
                 }
-            }
-            else
+            }           
+        }
+
+        private IEnumerable<string> GetWebTestPaths()
+        {
+            if (_isSDK)
             {
-                ProjectRootElement root = ProjectRootElement.Open(_projectFilePath);
-
-                // Find all web test files referenced in the project file
-                IEnumerable<ProjectItemElement> webTestItemElements = root.Items
-                    .Where(item => item.ItemType == "WebTest" && item.Include.EndsWith(".webtest"));
-
-                foreach (ProjectItemElement webTestItemElement in webTestItemElements)
-                {
-                    string webTestFilePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_projectFilePath), webTestItemElement.Include);
-                    WebTestFile webTest = ParseWebTestFile(webTestFilePath);
-                    _webTests.Add(webTest.Name, webTest);
-                }
+                string projectDirectory = Path.GetDirectoryName(_projectFilePath);
+                return Directory.GetFiles(projectDirectory, "*.webtest", SearchOption.AllDirectories);
             }
+            ProjectRootElement root = ProjectRootElement.Open(_projectFilePath);
+
+            // Find all web test files referenced in the project file
+            IEnumerable<ProjectItemElement> webTestItemElements = root.Items
+                .Where(item => item.ItemType == "None" && item.Include.EndsWith(".webtest"));
+
+            return webTestItemElements.Select(e => Path.Combine(Path.GetDirectoryName(_projectFilePath), e.Include));
         }
 
         private WebTestFile ParseWebTestFile(string filePath)
@@ -108,12 +101,14 @@ namespace ReferenceReader
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
-
-            XmlNodeList requestNodes = xmlDoc.SelectNodes("//WebTest/Items/Request");
+            webTest.Name = Path.GetFileNameWithoutExtension(filePath);
+            webTest.FilePath = filePath;
+            XmlNodeList requestNodes = xmlDoc.DocumentElement.SelectNodes("//*[local-name()='Request']");
             foreach (XmlNode requestNode in requestNodes)
             {
-                Request request = new Request();
-                request.Url = requestNode.Attributes["Url"].Value;
+                Request request = new Request(requestNode.Attributes["Url"].Value);
+                request.TryParseUrl();
+                request.Method = requestNode.Attributes["Method"].Value;
                 // Parse other properties of the request node and add them to the request object
                 webTest.Requests.Add(request);
             }
@@ -122,5 +117,7 @@ namespace ReferenceReader
 
             return webTest;
         }
+
+        public WebTestFile[] WebTests => _webTests.Values.ToArray();
     }
 }

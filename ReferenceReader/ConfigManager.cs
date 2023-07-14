@@ -52,7 +52,7 @@ namespace ReferenceReader
         {
             Console.WriteLine("Config file not found. Creating default config.");
 
-            var defaultConfig = new Dictionary<string, string> { { "ProjectFilePath", "Path/To/YourProject.csproj" } };
+            var defaultConfig = new Dictionary<string, string> { };
 
             var configContent = JsonSerializer.Serialize(defaultConfig, jsonOptions);
             File.WriteAllText(ConfigFilePath, configContent);
