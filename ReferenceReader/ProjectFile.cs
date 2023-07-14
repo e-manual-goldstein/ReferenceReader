@@ -10,10 +10,26 @@ namespace ReferenceReader
     public class ProjectFile
     {
         private string _projectFilePath;
+        private bool _isSDK;
 
         public ProjectFile(string projectFilePath)
         {
             _projectFilePath = projectFilePath;
+            _isSDK = CheckIfSDKFormat();
+        }
+
+        private bool CheckIfSDKFormat()
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(_projectFilePath);
+
+            XmlElement rootElement = xmlDoc.DocumentElement;
+            if (rootElement != null && rootElement.HasAttribute("Sdk"))
+            {
+                return true; // Project file is in SDK format
+            }
+
+            return false; // Project file is not in SDK format
         }
 
         Dictionary<string, DllReference> _dllReferences = new Dictionary<string, DllReference>();
@@ -23,28 +39,31 @@ namespace ReferenceReader
 
         public void GetReferences()
         {
-            ProjectRootElement root = ProjectRootElement.Open(_projectFilePath);
-
-            foreach (var itemGroup in root.ItemGroups)
+            if (_isSDK)
             {
-                foreach (var item in itemGroup.Items)
+                ProjectRootElement root = ProjectRootElement.Open(_projectFilePath);
+
+                foreach (var itemGroup in root.ItemGroups)
                 {
-                    switch (item.ItemType)
+                    foreach (var item in itemGroup.Items)
                     {
-                        case "Reference":
-                            var dllReference = new DllReference(item);
-                            _dllReferences[dllReference.Name] = dllReference;
-                            break;
-                        case "PackageReference":
-                            var packageReference = new PackageReference(item);
-                            _packageReferences[packageReference.Name] = packageReference;
-                            break;
-                        case "ProjectReference":
-                            var projectReference = new ProjectReference(item);
-                            _projectReferences[projectReference.Name] = projectReference;
-                            break;
-                        default:
-                            continue;
+                        switch (item.ItemType)
+                        {
+                            case "Reference":
+                                var dllReference = new DllReference(item);
+                                _dllReferences[dllReference.Name] = dllReference;
+                                break;
+                            case "PackageReference":
+                                var packageReference = new PackageReference(item);
+                                _packageReferences[packageReference.Name] = packageReference;
+                                break;
+                            case "ProjectReference":
+                                var projectReference = new ProjectReference(item);
+                                _projectReferences[projectReference.Name] = projectReference;
+                                break;
+                            default:
+                                continue;
+                        }
                     }
                 }
             }
