@@ -49,10 +49,10 @@ namespace ReferenceReader.References
 
         public override IEnumerable<ITransitiveDependency> GetTransitiveDependencies(ProjectFile projectFile)
         {
-            foreach (var reference in ProjectFile.AllReferences())
-            {
+            //foreach (var reference in ProjectFile.AllReferences())
+            //{
                 yield return null;
-            }
+            //}
         }
     }
 }

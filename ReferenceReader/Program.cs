@@ -1,24 +1,17 @@
-﻿using Microsoft.Build.Construction;
-using Microsoft.Build.Evaluation;
-using ReferenceReader.Dependencies;
+﻿using ReferenceReader;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
-namespace ReferenceReader
+public class Program
 {
-    public class Program
+    private static ConfigManager configManager;
+
+    public static void Main()
     {
+        configManager = new ConfigManager();
+        configManager.SettingNotFound += HandleSettingNotFound;
 
-        private static ConfigManager configManager;
-
-        public static void Main()
-        {
-            configManager = new ConfigManager();
-            configManager.SettingNotFound += HandleSettingNotFound;
-
-            string projectFilePath = configManager.GetConfigSetting("ProjectFilePath");
+        string projectFilePath = configManager.GetConfigSetting("ProjectFilePath");
 
             if (!File.Exists(projectFilePath))
             {
@@ -30,30 +23,17 @@ namespace ReferenceReader
             string packagePath = configManager.GetConfigSetting("PackageDirectory");
             ProjectFile rootProject = new ProjectFile(projectFilePath, packagePath);
             rootProject.GetReferences();
-
-            foreach (var @ref in rootProject.AllReferences())
-            {
-                Console.WriteLine(@ref.Name);
-                foreach (var dependency in @ref.GetTransitiveDependencies(rootProject))
-                {
-                    Console.WriteLine($"\t{dependency.Name}");
-                }
-                
-                // Process the transitive dependencies as needed
-            }
-
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
-        }
+            rootProject.ParseWebTestFiles();
 
 
-       
-        private static string HandleSettingNotFound()
-        {
-            Console.WriteLine("Please input a value for the following config setting: ProjectFilePath");
-            return Console.ReadLine();
-        }
+
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadKey();
     }
 
-    // Rest of the classes and interfaces...
+    private static string HandleSettingNotFound()
+    {
+        Console.WriteLine("Please input a value for the following config setting: ProjectFilePath");
+        return Console.ReadLine();
+    }
 }
