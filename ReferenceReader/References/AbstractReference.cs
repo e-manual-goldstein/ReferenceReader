@@ -30,7 +30,6 @@ namespace ReferenceReader.References
             // Assign other common properties
             Name = item.GetMetadataValue("Name") ?? item.Include;
             ContainingProjectPath = item.ContainingProject.FullPath;
-
         }
 
         protected abstract string ResolveActualPath();

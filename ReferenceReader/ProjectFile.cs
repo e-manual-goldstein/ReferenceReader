@@ -1,7 +1,9 @@
 ﻿using Microsoft.Build.Construction;
+using ReferenceReader.Files;
 using ReferenceReader.References;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace ReferenceReader
 {
@@ -17,7 +19,8 @@ namespace ReferenceReader
         Dictionary<string, DllReference> _dllReferences = new Dictionary<string, DllReference>();
         Dictionary<string, ProjectReference> _projectReferences = new Dictionary<string, ProjectReference>();
         Dictionary<string, PackageReference> _packageReferences = new Dictionary<string, PackageReference>();
-        
+        Dictionary<string, WebTestFile> _webTests = new Dictionary<string, WebTestFile>();
+
         public void GetReferences()
         {
             ProjectRootElement root = ProjectRootElement.Open(_projectFilePath);
@@ -47,11 +50,38 @@ namespace ReferenceReader
             }
         }
 
-        public IEnumerable<AbstractReference> AllReferences()
+        public void ParseWebTests()
         {
-            return _dllReferences.Values
-                .Concat<AbstractReference>(_projectReferences.Values)
-                .Concat<AbstractReference>(_packageReferences.Values);
+            // Get all web test files in the project directory
+            string projectDirectory = System.IO.Path.GetDirectoryName(_projectFilePath);
+            string[] webTestFiles = System.IO.Directory.GetFiles(projectDirectory, "*.webtest", System.IO.SearchOption.AllDirectories);
+
+            foreach (string webTestFile in webTestFiles)
+            {
+                WebTestFile webTest = ParseWebTestFile(webTestFile);
+                _webTests[webTest.Name] = webTest;
+            }
+        }
+
+        private WebTestFile ParseWebTestFile(string filePath)
+        {
+            WebTestFile webTest = new WebTestFile();
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(filePath);
+
+            XmlNodeList requestNodes = xmlDoc.SelectNodes("//WebTest/Items/Request");
+            foreach (XmlNode requestNode in requestNodes)
+            {
+                Request request = new Request();
+                request.Url = requestNode.Attributes["Url"].Value;
+                // Parse other properties of the request node and add them to the request object
+                webTest.Requests.Add(request);
+            }
+
+            // Parse DataSources and ValidationRules in a similar manner
+
+            return webTest;
         }
     }
 }
